@@ -8,9 +8,6 @@ import time
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.1
 
-# number of nodes on crack:
-crack_acc = 20
-
 
 def click_button(rank):
     point_x = 1426
@@ -19,7 +16,7 @@ def click_button(rank):
     pyautogui.click(point_x, point_y0 + rank * space)
 
 
-def click_num(num, key_pos=True):
+def click_num(num):
     click_button(0)
     pyautogui.click()
     pyautogui.typewrite(str(num))
@@ -63,12 +60,11 @@ def analyse():
     click_button(2)
     click_button(0)
     click_button(0)
-    time.sleep(10)
+    time.sleep(12)
     click_button(18)
 
 
 def get_sif(name):
-    name = str(name)
     click_button(3)
     click_button(1)
     click_button(2)
@@ -77,7 +73,7 @@ def get_sif(name):
     pyautogui.click(x=1485, y=168)
 
     pyautogui.press('tab', 12)
-    pyautogui.write(f'{name}result')
+    pyautogui.write(f'del_y_{round(name, 1)}_result')
     pyautogui.press(['tab', 'enter', 'enter'])
 
     # you will probably have to change these coordinates:
@@ -99,7 +95,7 @@ class Crack:
         self.a = a
         self.alpha = alpha / 360 * 2 * np.pi
 
-    def make_crack(self):
+    def make_crack(self, crack_acc=10):
         click_button(1)
         click_button(3)
         click_button(0)
@@ -114,7 +110,7 @@ class Crack:
         click_num(self.y + 2 * self.a * np.sin(self.alpha))
 
         click_num(crack_acc)
-        time.sleep(2.0)
+        time.sleep(2)
         pyautogui.click()
         click_button(18)
         time.sleep(2)
@@ -122,24 +118,27 @@ class Crack:
 
 # here you define your parameters:
 # number of steps:
-n = 10
+n = 20
 
 # crack length:
 a = 10
 
 # max distance:
-dist = 50
+dist_max = 50
+
+# min distance:
+dist_min = 5
 
 
 # script execution:
-for i in range(1, n):
-    del_y = np.linspace(dist, 5, n)
-    crack_left = Crack(50, 100, a)
-    crack_right = Crack(50 + a, 100 + del_y, a)
+for del_y in np.linspace(dist_max, dist_min, n):
+
+    crack_left = Crack(100 - (2 * a), 100 - del_y/2, a)
+    crack_right = Crack(100, 100 + del_y/2, a)
 
     start_franc()
-    crack_left.make_crack()
-    crack_right.make_crack()
+    crack_left.make_crack(crack_acc=15)
+    crack_right.make_crack(crack_acc=15)
     analyse()
-    get_sif(i)
+    get_sif(del_y)
     close_franc()
