@@ -64,7 +64,7 @@ def analyse():
     click_button(18)
 
 
-def get_sif(name):
+def get_sif(suffix='_', name=0):
     click_button(3)
     click_button(1)
     click_button(2)
@@ -73,7 +73,7 @@ def get_sif(name):
     pyautogui.click(x=1485, y=168)
 
     pyautogui.press('tab', 12)
-    pyautogui.write(f'del_y_{round(name, 1)}_result')
+    pyautogui.write(str(suffix) + str(int(round(name, 0))) + '_result')
     pyautogui.press(['tab', 'enter', 'enter'])
 
     # you will probably have to change these coordinates:
@@ -116,6 +116,16 @@ class Crack:
         time.sleep(2)
 
 
+
+# example: script execution of a single rotated crack:
+crack_rotated = Crack(100, 100, 10, alpha=45)
+start_franc()
+crack_rotated.make_crack(crack_acc=15)
+analyse()
+get_sif(suffix='rotated', name=1)
+close_franc()
+
+# script execution for my actual cracks:
 # here you define your parameters:
 # number of steps:
 n = 20
@@ -129,8 +139,7 @@ dist_max = 50
 # min distance:
 dist_min = 5
 
-
-# script execution:
+'''
 for del_y in np.linspace(dist_max, dist_min, n):
 
     crack_left = Crack(100 - (2 * a), 100 - del_y/2, a)
@@ -140,5 +149,6 @@ for del_y in np.linspace(dist_max, dist_min, n):
     crack_left.make_crack(crack_acc=15)
     crack_right.make_crack(crack_acc=15)
     analyse()
-    get_sif(del_y)
+    get_sif('del_y_', del_y)
     close_franc()
+'''
