@@ -25,9 +25,10 @@ def click_num(num):
 
 def start_franc():
     # centering mouse on screen, so franc2d Window opens in right spot:
-    pyautogui.moveTo(1920/2, 1080/2)
+    x, y = pyautogui.size()
+    pyautogui.moveTo(x/2, y/2)
 
-    # opening franc2d
+    # opening franc2d:
     subprocess.Popen(["C:\\MS64\\franc2d.exe"])
     time.sleep(1)
 
@@ -116,14 +117,15 @@ class Crack:
         time.sleep(2)
 
 
-
+'''
 # example: script execution of a single rotated crack:
-crack_rotated = Crack(100, 100, 10, alpha=45)
+crack_rotated = Crack(100, 100, 10, alpha=40)
 start_franc()
 crack_rotated.make_crack(crack_acc=15)
 analyse()
 get_sif(suffix='rotated', name=1)
 close_franc()
+'''
 
 # script execution for my actual cracks:
 # here you define your parameters:
@@ -137,9 +139,9 @@ a = 10
 dist_max = 50
 
 # min distance:
-dist_min = 5
+dist_min = 1
 
-'''
+
 for del_y in np.linspace(dist_max, dist_min, n):
 
     crack_left = Crack(100 - (2 * a), 100 - del_y/2, a)
@@ -151,4 +153,3 @@ for del_y in np.linspace(dist_max, dist_min, n):
     analyse()
     get_sif('del_y_', del_y)
     close_franc()
-'''
