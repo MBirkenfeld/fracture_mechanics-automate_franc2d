@@ -119,7 +119,8 @@ class Crack:
 
 '''
 # example: script execution of a single rotated crack:
-crack_rotated = Crack(100, 100, 10, alpha=40)
+crack_rotated = Crack(100, 100, 10, alpha=40)125.0
+
 start_franc()
 crack_rotated.make_crack(crack_acc=15)
 analyse()
@@ -128,7 +129,8 @@ close_franc()
 '''
 
 # script execution for my actual cracks:
-# here you define your parameters:
+# here you define your parameters:15
+
 # number of steps:
 n = 20
 

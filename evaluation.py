@@ -6,6 +6,16 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
+
+ksi2mpa = 0.14503773800722
+in2mm = 25.4
+N2pound = 4.4482216282509
+
+
+def k_i(sigma, a):
+    return sigma * ((np.pi * a / N2pound / 1000) ** 0.5)
+
+
 # get file name in files:
 files = glob.glob('*.txt')
 
@@ -35,7 +45,6 @@ for file in files:
             result = re.search(r"Total *(-?\d+\.\d+) *(-?\d+\.\d+) *(-?\d+\.\d+) *(-?\d+\.\d+)", content)
 
             # use regexp  for search "Y mouth" + 2 numbers, then grab two (maybe) float numbers:
-            print(file)
             param = re.search(
                 r"Y mouth *?\n *\d *\d *(\d*\.?\d*?) *(\d*\.?\d*?)\n *\d *\d *(\d*\.?\d*?) *(\d*\.?\d*?)\n *\d *\d *(\d*\.?\d*?) *(\d*\.?\d*?)\n *\d *\d *(\d*\.?\d*?) *(\d*\.?\d*?)\n",
                 content)
@@ -51,15 +60,10 @@ for file in files:
         f.close()
 
 
-# final_results['param_ph'] = []
-# for elem in final_results['param']:
-#     for i in range(1, 4):
-#         final_results['param_ph'].append(elem)
-# final_results['param'] = final_results['param_ph']
-# final_results['param'] = 4 * final_results['param']
 
 # plotting:
 df = pd.DataFrame(final_results)
+df['k'] = [k_i(1000, 10)] * len(df['k1'])
 
 # sorting dataFrame by filename:
 df['sort'] = df['file'].str.extract(r'(\d+)', expand=False).astype(int)
@@ -67,20 +71,23 @@ df.sort_values('sort', inplace=True, ascending=False)
 df = df.drop('sort', axis=1)
 df.reset_index(drop=True, inplace=True)
 
-# resorting df for each crack tip
-# df['k1_1'] = df['k1'][::crack_tip_num]
-# df['k1_2'] = df['k1'][1::crack_tip_num]
-
 # changing SIF from MPa * sqrt(in) into MPa * sqrt(m):
-df['k1'] = df['k1'] * np.sqrt(0.0254)
+df['k1'] = df['k1'] * np.sqrt(0.0254) * ksi2mpa
 
 # plot sif at each crack tip:
 plt.plot(df['param'][::crack_tip_num], df['k1'][::crack_tip_num])
 plt.plot(df['param'][1::crack_tip_num], df['k1'][1::crack_tip_num])
 plt.plot(df['param'][2::crack_tip_num], df['k1'][2::crack_tip_num])
 plt.plot(df['param'][3::crack_tip_num], df['k1'][3::crack_tip_num])
+plt.plot(df['param'], df['k'])
+plt.legend(['sif mode 1 crack tip number ' + str(elem) for elem in range(1, crack_tip_num+1)] + ['sif_analytic'])
+plt.show()
 
-plt.legend(['crack tip number: ' + str(elem) for elem in range(1, crack_tip_num+1)])
+plt.plot(df['param'][::crack_tip_num], df['k2'][::crack_tip_num])
+plt.plot(df['param'][1::crack_tip_num], df['k2'][1::crack_tip_num])
+plt.plot(df['param'][2::crack_tip_num], df['k2'][2::crack_tip_num])
+plt.plot(df['param'][3::crack_tip_num], df['k2'][3::crack_tip_num])
+plt.legend(['sif mode 2 crack tip number ' + str(elem) for elem in range(1, crack_tip_num+1)])
 
 plt.show()
 
