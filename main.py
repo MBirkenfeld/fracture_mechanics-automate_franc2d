@@ -8,6 +8,8 @@ import time
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.1
 
+in2mm = 25.4
+
 
 def click_button(rank):
     point_x = 1426
@@ -53,7 +55,7 @@ def start_franc():
     pyautogui.click()
     pyautogui.doubleClick(x=655, y=588)
     time.sleep(1)
-    pyautogui.doubleClick(x=676, y=563)
+    pyautogui.doubleClick(x=693, y=419)
     time.sleep(1)
 
 
@@ -91,9 +93,9 @@ def close_franc():
 
 class Crack:
     def __init__(self, x, y, a, alpha=0):
-        self.x = x
-        self.y = y
-        self.a = a
+        self.x = x / in2mm
+        self.y = y / in2mm
+        self.a = a / in2mm
         self.alpha = alpha / 360 * 2 * np.pi
 
     def make_crack(self, crack_acc=10):
@@ -129,29 +131,43 @@ close_franc()
 '''
 
 # script execution for my actual cracks:
-# here you define your parameters:15
+# here you define your parameters:
 
 # number of steps:
-n = 20
+n = 45
 
-# crack length:
+# crack length in mm:
 a = 10
 
-# max distance:
-dist_max = 50
+for al in np.linspace(90, 0, n):
 
-# min distance:
+    crack_left = Crack(10*25.4/2 - (2 * a), 10*25.4/2, a, alpha=al)
+    crack_right = Crack(10*25.4/2, 10*25.4/2, a, alpha=-al)
+
+    start_franc()
+    crack_left.make_crack(crack_acc=15)
+    crack_right.make_crack(crack_acc=15)
+    analyse()
+    get_sif('alpha_', al)
+    close_franc()
+
+'''
+# max distance in mm:
+dist_max = 80
+
+
+# min distance in mm:
+
 dist_min = 1
-
 
 for del_y in np.linspace(dist_max, dist_min, n):
 
-    crack_left = Crack(100 - (2 * a), 100 - del_y/2, a)
-    crack_right = Crack(100, 100 + del_y/2, a)
+    crack_left = Crack(10*25.4/2 - (2 * a), 10*25.4/2 - del_y/2, a)
+    crack_right = Crack(10*25.4/2, 10*25.4/2 + del_y/2, a)
 
     start_franc()
     crack_left.make_crack(crack_acc=15)
     crack_right.make_crack(crack_acc=15)
     analyse()
     get_sif('del_y_', del_y)
-    close_franc()
+    close_franc()'''
